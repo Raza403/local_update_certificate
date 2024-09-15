@@ -2,16 +2,32 @@
 require('../../config.php');
 require_login();
 
-$userid = required_param('userid', PARAM_INT);
+$query = optional_param('query', '', PARAM_TEXT);
+$userid = optional_param('userid', 0, PARAM_INT);
 
-// Fetch enrolled courses for the selected user
-$enrolled_courses = enrol_get_users_courses($userid);
+if ($query) {
+    // Handle autocomplete for users
+    $users = $DB->get_records_sql('SELECT id, CONCAT(firstname, " ", lastname) AS name 
+                                   FROM {user} 
+                                   WHERE CONCAT(firstname, " ", lastname) LIKE ? 
+                                   AND deleted = 0', ['%' . $query . '%']);
 
-$courses = [];
-foreach ($enrolled_courses as $course) {
-    $courses[] = ['id' => $course->id, 'fullname' => $course->fullname];
+    $suggestions = [];
+    foreach ($users as $user) {
+        $suggestions[] = ['id' => $user->id, 'name' => $user->name];
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode(['suggestions' => $suggestions]);
+} elseif ($userid) {
+    // Handle course retrieval based on user
+    $enrolled_courses = enrol_get_users_courses($userid);
+    
+    $courses = [];
+    foreach ($enrolled_courses as $course) {
+        $courses[] = ['id' => $course->id, 'fullname' => $course->fullname];
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode(['courses' => $courses]);
 }
-
-// Return the list of courses as JSON
-header('Content-Type: application/json');
-echo json_encode(['courses' => $courses]);

@@ -11,19 +11,30 @@ class update_form extends moodleform {
     protected function definition() {
         $mform = $this->_form;
 
-        // Get list of students
-        global $DB;
-        $students = $DB->get_records_menu('user', null, 'lastname ASC', 'id, CONCAT(firstname, " ", lastname)');
-        $mform->addElement('select', 'userid', get_string('selectstudent', 'local_update_certificate'), $students);
-        
-        // Get list of courses (initially populated)
-        $courses = $DB->get_records_menu('course', null, 'fullname ASC', 'id, fullname');
+        // Autocomplete input for student selection
+        $mform->addElement('autocomplete', 'userid', get_string('selectstudent', 'local_update_certificate'), 
+            $this->get_students_for_autocomplete(), ['placeholder' => 'Start typing to search...']);
+
+        // Dropdown for course selection (initially populated)
+        $courses = $this->get_courses_for_dropdown();
         $mform->addElement('select', 'courseid', get_string('selectcourse', 'local_update_certificate'), $courses);
 
         // Date selection
         $mform->addElement('date_selector', 'completiondate', get_string('selectdate', 'local_update_certificate'), array('default' => time()));
-        
+
         // Add submit and cancel buttons
         $this->add_action_buttons(true, get_string('setcompletiondate', 'local_update_certificate'));
+    }
+
+    // Method to get students for autocomplete
+    private function get_students_for_autocomplete() {
+        global $DB;
+        return $DB->get_records_menu('user', ['deleted' => 0], '', 'id, CONCAT(firstname, " ", lastname) as name');
+    }
+
+    // Method to get courses for dropdown (initially empty)
+    private function get_courses_for_dropdown() {
+        global $DB;
+        return $DB->get_records_menu('course', null, 'fullname ASC', 'id, fullname');
     }
 }
