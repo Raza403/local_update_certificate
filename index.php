@@ -12,6 +12,9 @@ $PAGE->set_url(new moodle_url('/local/update_certificate/index.php'));
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_update_certificate'));
 
+// Load the necessary JS for AJAX
+$PAGE->requires->js('/local/update_certificate/js/update_courses.js');
+
 $mform = new \local_update_certificate\form\update_form();
 
 if ($mform->is_cancelled()) {
