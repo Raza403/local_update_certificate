@@ -54,6 +54,7 @@ if ($mform->is_cancelled()) {
 
     // Display the form again with reset fields
     $mform = new \local_update_certificate\form\update_form(); // Recreate the form to reset fields
+    $mform->set_data($fromform); // Set the form data to retain the selected values
     $mform->display();
     echo $OUTPUT->footer();
     exit;

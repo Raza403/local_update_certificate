@@ -16,9 +16,9 @@ class update_form extends moodleform {
         $students = $DB->get_records_menu('user', null, 'lastname ASC', 'id, CONCAT(firstname, " ", lastname)');
         $mform->addElement('select', 'userid', get_string('selectstudent', 'local_update_certificate'), $students);
         
-        // Course selection (initially empty, populated dynamically via JS)
-        $mform->addElement('select', 'courseid', get_string('selectcourse', 'local_update_certificate'), []);
-        $mform->setDefault('courseid', ''); // Default to empty course selection
+        // Get list of courses (initially populated)
+        $courses = $DB->get_records_menu('course', null, 'fullname ASC', 'id, fullname');
+        $mform->addElement('select', 'courseid', get_string('selectcourse', 'local_update_certificate'), $courses);
 
         // Date selection
         $mform->addElement('date_selector', 'completiondate', get_string('selectdate', 'local_update_certificate'), array('default' => time()));
