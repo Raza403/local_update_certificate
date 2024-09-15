@@ -10,7 +10,7 @@ require_capability('moodle/site:config', $context);
 
 $PAGE->set_url(new moodle_url('/local/update_certificate/index.php'));
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('pluginname', 'local_update_certificate'));
+$PAGE->set_title(get_string('updatecompletiondate', 'local_update_certificate'));
 
 // Load the necessary JS for AJAX and autocomplete
 $PAGE->requires->js('/local/update_certificate/js/update_courses.js');
@@ -62,5 +62,6 @@ if ($mform->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('updatecompletiondate', 'local_update_certificate')); // This adds the heading to the page
 $mform->display();
 echo $OUTPUT->footer();
