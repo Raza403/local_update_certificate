@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_update_certificate';
-$plugin->version = 2024091500; // YYYYMMDDXX
+$plugin->version = 2024092600; // YYYYMMDDXX
 $plugin->requires = 2022041900; // Requires this Moodle version
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v1.0';
+$plugin->release = 'v1.1';

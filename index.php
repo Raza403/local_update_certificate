@@ -22,16 +22,18 @@ if ($mform->is_cancelled()) {
     redirect(new moodle_url('/'));
 } else if ($fromform = $mform->get_data()) {
     // Process the form data
-    $completiondate = isset($fromform->completiondate) && is_numeric($fromform->completiondate) ? intval($fromform->completiondate) : 0;
-    $renewbydate = isset($fromform->renewbydate) && is_numeric($fromform->renewbydate) ? intval($fromform->renewbydate) : 0; // New field
+    if (isset($fromform->completiondate) && is_numeric($fromform->completiondate)) {
+        $completiondate = intval($fromform->completiondate); // Ensure it's an integer
+    } else {
+        $completiondate = 0; // Handle unexpected data
+    }
 
     $userid = $fromform->userid;
     $courseid = $fromform->courseid;
 
-    // Check if the record exists
+    // Check if the record exists for completion date
     if ($record = $DB->get_record('course_completions', array('userid' => $userid, 'course' => $courseid))) {
         $record->timecompleted = $completiondate;
-        $record->renewby = $renewbydate; // Assuming you add this field in the database later
 
         if ($DB->update_record('course_completions', $record)) {
             $message = get_string('completiondateset', 'local_update_certificate');
@@ -43,6 +45,36 @@ if ($mform->is_cancelled()) {
     } else {
         $message = get_string('error', 'local_update_certificate'); // Record not found
         $alert_class = 'alert-danger';
+    }
+
+    // Fetch the itemid for "Renew by" date
+    $itemid = $DB->get_field('grade_items', 'id', ['courseid' => $courseid, 'idnumber' => '222']);
+
+    if ($itemid) {
+        // Fetch timemodified and id for renew by date
+        $grade_record = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
+
+        if ($grade_record && is_null($grade_record->timemodified)) {
+            $message = get_string('renewactivityerror', 'local_update_certificate');
+            $alert_class = 'alert-danger';
+        } else if ($grade_record) {
+            // Update the timemodified with the renew by date
+            $renewbydate = isset($fromform->renewbydate) ? intval($fromform->renewbydate) : 0;
+            if ($renewbydate > 0) {
+                $grade_record->timemodified = $renewbydate; // Modify the existing record's timemodified field
+
+                if ($DB->update_record('grade_grades', $grade_record)) {
+                    $message .= '<br>' . get_string('renewbydateset', 'local_update_certificate');
+                    $alert_class = 'alert-success';
+                } else {
+                    $message .= '<br>' . get_string('error', 'local_update_certificate');
+                    $alert_class = 'alert-danger';
+                }
+            }
+        } else {
+            $message .= '<br>' . get_string('error', 'local_update_certificate');
+            $alert_class = 'alert-danger';
+        }
     }
 
     echo $OUTPUT->header();

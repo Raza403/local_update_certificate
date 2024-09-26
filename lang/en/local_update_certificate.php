@@ -9,4 +9,6 @@ $string['setcompletiondate'] = 'Set completion date';
 $string['completiondateset'] = 'Completion date has been set.';
 $string['error'] = 'An error occurred. Please try again.';
 $string['updatecompletiondate'] = 'Update course completion date';
-$string['selectrenewbydate'] = 'Renew by date';
+$string['renewbydate'] = 'Renew by date';
+$string['renewactivityerror'] = 'Please complete the renew by date activity first.';
+$string['renewbydateset'] = 'Renew by date has been successfully set.';

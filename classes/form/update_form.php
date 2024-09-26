@@ -23,7 +23,7 @@ class update_form extends moodleform {
         $mform->addElement('date_selector', 'completiondate', get_string('Issuedate', 'local_update_certificate'), array('default' => time()));
 
         // Date selection for renew by date
-        $mform->addElement('date_selector', 'renewbydate', get_string('selectrenewbydate', 'local_update_certificate'), array('default' => time()));
+        $mform->addElement('date_selector', 'renewbydate', get_string('renewbydate', 'local_update_certificate'), array('default' => time()));
 
         // Add submit and cancel buttons
         $this->add_action_buttons(true, get_string('setcompletiondate', 'local_update_certificate'));
