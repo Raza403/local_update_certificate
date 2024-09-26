@@ -4,8 +4,9 @@
 $string['pluginname'] = 'Update certificate';
 $string['selectstudent'] = 'Select student';
 $string['selectcourse'] = 'Select course';
-$string['selectdate'] = 'Select date';
+$string['Issuedate'] = 'Issue date';
 $string['setcompletiondate'] = 'Set completion date';
 $string['completiondateset'] = 'Completion date has been set.';
 $string['error'] = 'An error occurred. Please try again.';
 $string['updatecompletiondate'] = 'Update course completion date';
+$string['selectrenewbydate'] = 'Renew by date';

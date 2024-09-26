@@ -65,7 +65,7 @@ To customize text displayed by the plugin, modify the strings in the language fi
 $string['pluginname'] = 'Update course completion date';
 $string['selectstudent'] = 'Select student';
 $string['selectcourse'] = 'Select course';
-$string['selectdate'] = 'Select date';
+$string['Issuedate'] = 'Select date';
 $string['setcompletiondate'] = 'Set completion date';
 $string['completiondateset'] = 'Completion date has been set.';
 $string['error'] = 'An error occurred. Please try again.';

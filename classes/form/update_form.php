@@ -19,8 +19,11 @@ class update_form extends moodleform {
         $courses = $this->get_courses_for_dropdown();
         $mform->addElement('select', 'courseid', get_string('selectcourse', 'local_update_certificate'), $courses);
 
-        // Date selection
-        $mform->addElement('date_selector', 'completiondate', get_string('selectdate', 'local_update_certificate'), array('default' => time()));
+        // Date selection for completion date
+        $mform->addElement('date_selector', 'completiondate', get_string('Issuedate', 'local_update_certificate'), array('default' => time()));
+
+        // Date selection for renew by date
+        $mform->addElement('date_selector', 'renewbydate', get_string('selectrenewbydate', 'local_update_certificate'), array('default' => time()));
 
         // Add submit and cancel buttons
         $this->add_action_buttons(true, get_string('setcompletiondate', 'local_update_certificate'));

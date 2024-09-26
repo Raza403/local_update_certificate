@@ -22,11 +22,8 @@ if ($mform->is_cancelled()) {
     redirect(new moodle_url('/'));
 } else if ($fromform = $mform->get_data()) {
     // Process the form data
-    if (isset($fromform->completiondate) && is_numeric($fromform->completiondate)) {
-        $completiondate = intval($fromform->completiondate); // Ensure it's an integer
-    } else {
-        $completiondate = 0; // Handle unexpected data
-    }
+    $completiondate = isset($fromform->completiondate) && is_numeric($fromform->completiondate) ? intval($fromform->completiondate) : 0;
+    $renewbydate = isset($fromform->renewbydate) && is_numeric($fromform->renewbydate) ? intval($fromform->renewbydate) : 0; // New field
 
     $userid = $fromform->userid;
     $courseid = $fromform->courseid;
@@ -34,6 +31,7 @@ if ($mform->is_cancelled()) {
     // Check if the record exists
     if ($record = $DB->get_record('course_completions', array('userid' => $userid, 'course' => $courseid))) {
         $record->timecompleted = $completiondate;
+        $record->renewby = $renewbydate; // Assuming you add this field in the database later
 
         if ($DB->update_record('course_completions', $record)) {
             $message = get_string('completiondateset', 'local_update_certificate');
