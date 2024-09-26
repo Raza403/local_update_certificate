@@ -22,70 +22,49 @@ if ($mform->is_cancelled()) {
     redirect(new moodle_url('/'));
 } else if ($fromform = $mform->get_data()) {
     // Process the form data
-    if (isset($fromform->completiondate) && is_numeric($fromform->completiondate)) {
-        $completiondate = intval($fromform->completiondate); // Ensure it's an integer
-    } else {
-        $completiondate = 0; // Handle unexpected data
-    }
-
+    $completiondate = isset($fromform->completiondate) && is_numeric($fromform->completiondate) ? intval($fromform->completiondate) : 0;
     $userid = $fromform->userid;
     $courseid = $fromform->courseid;
 
-    // Check if the record exists for completion date
-    if ($record = $DB->get_record('course_completions', array('userid' => $userid, 'course' => $courseid))) {
+    // Update completion date logic (same as before)
+    if ($record = $DB->get_record('course_completions', ['userid' => $userid, 'course' => $courseid])) {
         $record->timecompleted = $completiondate;
-
-        if ($DB->update_record('course_completions', $record)) {
-            $message = get_string('completiondateset', 'local_update_certificate');
-            $alert_class = 'alert-success';
-        } else {
-            $message = get_string('error', 'local_update_certificate');
-            $alert_class = 'alert-danger';
-        }
-    } else {
-        $message = get_string('error', 'local_update_certificate'); // Record not found
-        $alert_class = 'alert-danger';
+        $DB->update_record('course_completions', $record);
     }
 
-    // Fetch the itemid for "Renew by" date
-    $itemid = $DB->get_field('grade_items', 'id', ['courseid' => $courseid, 'idnumber' => '222']);
+    // Only update the renew by date if courseid is 2 and renewbydate is provided
+    if ($courseid == 2 && isset($fromform->renewbydate)) {
+        // Fetch the itemid for "Renew by" date
+        $itemid = $DB->get_field('grade_items', 'id', ['courseid' => $courseid, 'idnumber' => '222']);
 
-    if ($itemid) {
-        // Fetch timemodified and id for renew by date
-        $grade_record = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
+        if ($itemid) {
+            // Fetch timemodified and id for renew by date
+            $grade_record = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
 
-        if ($grade_record && is_null($grade_record->timemodified)) {
-            $message = get_string('renewactivityerror', 'local_update_certificate');
-            $alert_class = 'alert-danger';
-        } else if ($grade_record) {
-            // Update the timemodified with the renew by date
-            $renewbydate = isset($fromform->renewbydate) ? intval($fromform->renewbydate) : 0;
-            if ($renewbydate > 0) {
-                $grade_record->timemodified = $renewbydate; // Modify the existing record's timemodified field
-
-                if ($DB->update_record('grade_grades', $grade_record)) {
-                    $message .= '<br>' . get_string('renewbydateset', 'local_update_certificate');
-                    $alert_class = 'alert-success';
-                } else {
-                    $message .= '<br>' . get_string('error', 'local_update_certificate');
-                    $alert_class = 'alert-danger';
+            if ($grade_record && is_null($grade_record->timemodified)) {
+                $message = get_string('renewactivityerror', 'local_update_certificate');
+                $alert_class = 'alert-danger';
+            } else if ($grade_record) {
+                // Update the timemodified with the renew by date
+                $renewbydate = isset($fromform->renewbydate) ? intval($fromform->renewbydate) : 0;
+                if ($renewbydate > 0) {
+                    $grade_record->timemodified = $renewbydate; // Modify the existing record's timemodified field
+                    $DB->update_record('grade_grades', $grade_record);
                 }
             }
-        } else {
-            $message .= '<br>' . get_string('error', 'local_update_certificate');
-            $alert_class = 'alert-danger';
         }
     }
 
+    // Display the success or error message
     echo $OUTPUT->header();
     echo '<div class="alert ' . $alert_class . ' alert-dismissible fade show" role="alert">';
     echo '<strong>' . $message . '</strong>';
     echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
     echo '</div>';
 
-    // Display the form again with reset fields
-    $mform = new \local_update_certificate\form\update_form(); // Recreate the form to reset fields
-    $mform->set_data($fromform); // Set the form data to retain the selected values
+    // Recreate the form to reset fields
+    $mform = new \local_update_certificate\form\update_form();
+    $mform->set_data($fromform);
     $mform->display();
     echo $OUTPUT->footer();
     exit;
