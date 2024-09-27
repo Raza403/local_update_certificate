@@ -23,8 +23,9 @@ class update_form extends moodleform {
         $mform->addElement('date_selector', 'completiondate', get_string('Issuedate', 'local_update_certificate'), array('default' => time()));
 
         // Date selection for renew by date (conditionally shown)
+        // Add an id attribute for the renewbydate row so that it can be easily accessed by JS
         $mform->addElement('date_selector', 'renewbydate', get_string('renewbydate', 'local_update_certificate'), array('optional' => true));
-        $mform->hideIf('renewbydate', 'courseid', 'neq', 2); // Show only if courseid is 2
+        $mform->setType('renewbydate', PARAM_RAW); // Set type for the element
 
         // Add submit and cancel buttons
         $this->add_action_buttons(true, get_string('setcompletiondate', 'local_update_certificate'));

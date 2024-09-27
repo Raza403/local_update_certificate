@@ -28,9 +28,9 @@ if ($mform->is_cancelled()) {
     $message = ''; // Initialize message
     $alert_class = 'alert-success'; // Default success class
 
-    // Only update the renew by date if courseid is 2 and renewbydate is provided
-    if ($courseid == 2 && isset($fromform->renewbydate)) {
-        $itemid = $DB->get_field('grade_items', 'id', ['courseid' => $courseid, 'idnumber' => '222']);
+    // Only update the renew by date if courseid is 14 and renewbydate is provided
+    if ($courseid == 14 && isset($fromform->renewbydate)) {
+        $itemid = $DB->get_field('grade_items', 'id', ['courseid' => $courseid, 'idnumber' => '999']);
 
         if ($itemid) {
             $grade_record = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
